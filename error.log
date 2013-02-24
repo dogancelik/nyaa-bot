@@ -1,0 +1,262 @@
+01-18 16:43 root     ERROR    Error in module (nyaa_calendar): class USERS has no attribute 'HALFOP'
+01-23 01:54 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+01-23 01:55 root     ERROR    Error when executing upc for pubmsg
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_calendar.py", line 28, in upc
+TypeError: sequence item 0: expected string, tuple found
+01-23 01:56 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:05 root     ERROR    Error in module (ctcp_reply): No module named ctcp_reply
+02-02 05:06 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:08 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:10 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:10 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:11 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:14 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:16 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:18 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:20 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:22 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:24 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:26 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:28 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:30 root     ERROR    Error when executing my_stats for pubmsg
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 100, in my_stats
+TypeError: 'NoneType' object has no attribute '__getitem__'
+02-02 05:30 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:32 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:35 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 05:37 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 221, in daily_login_check
+TypeError: not all arguments converted during string formatting
+02-02 06:10 root     ERROR    Error when executing bet for pubmsg
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 87, in bet
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 101, in enter_bet
+    random_between = int( 2**a + (1 if a < 1 else round(a)) )
+OverflowError: long int too large to convert to float
+02-02 06:15 root     ERROR    Error when executing my_stats for pubmsg
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 110, in my_stats
+TypeError: 'NoneType' object has no attribute '__getitem__'
+02-16 16:58 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 16:58 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 228, in daily_all_check
+    player_callback(player[1], points)
+  File "nyaa_pointsgame.py", line 231, in check_callback
+TypeError: not all arguments converted during string formatting
+02-16 17:00 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 231, in daily_all_check
+    if not (last_date < now_date < future_date) and player[2] >= points:
+TypeError: can't compare datetime.datetime to NoneType
+02-16 17:19 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 17:19 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 228, in daily_all_check
+    player_callback(player[1], points)
+  File "nyaa_pointsgame.py", line 231, in check_callback
+TypeError: not all arguments converted during string formatting
+02-16 17:21 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 228, in daily_all_check
+    player_callback(player[1], points)
+  File "nyaa_pointsgame.py", line 231, in check_callback
+TypeError: not all arguments converted during string formatting
+02-16 17:23 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 228, in daily_all_check
+    player_callback(player[1], points)
+  File "nyaa_pointsgame.py", line 231, in check_callback
+TypeError: not all arguments converted during string formatting
+02-16 17:25 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 228, in daily_all_check
+    player_callback(player[1], points)
+  File "nyaa_pointsgame.py", line 231, in check_callback
+TypeError: not all arguments converted during string formatting
+02-16 17:35 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 17:41 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 17:52 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 17:55 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 17:56 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 184, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 18:04 root     ERROR    Error when executing daily_login_check for endofnames
+Traceback (most recent call last):
+  File "irc.py", line 180, in process_messages
+    logger.debug("Executing %s for %s", function_name, event.eventtype())
+  File "nyaa_pointsgame.py", line 233, in daily_login_check
+  File "D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py", line 228, in daily_all_check
+    give_points(player[0], 0, points)
+  File "nyaa_pointsgame.py", line 231, in check_callback
+TypeError: not all arguments converted during string formatting
+02-16 18:10 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 181, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 201, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 18:18 root     ERROR    Error when executing join_check for join
+Traceback (most recent call last):
+  File "irc.py", line 181, in process_messages
+    handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+  File "nyaa_pointsgame.py", line 203, in join_check
+AttributeError: 'module' object has no attribute 'daily_login_check'
+02-16 20:00 root     ERROR    Error in module (nyaa_pointsgame): Non-ASCII character '\xc4' in file D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py on line 232, but no encoding declared; see http://www.python.org/peps/pep-0263.html for details (pointsgame.py, line 232)
+02-16 20:02 root     ERROR    Error in module (nyaa_pointsgame): Non-ASCII character '\xc3' in file D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py on line 232, but no encoding declared; see http://www.python.org/peps/pep-0263.html for details (pointsgame.py, line 232)
+02-16 20:02 root     ERROR    Error in module (nyaa_pointsgame): Non-ASCII character '\xc3' in file D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py on line 232, but no encoding declared; see http://www.python.org/peps/pep-0263.html for details (pointsgame.py, line 232)
+02-16 20:02 root     ERROR    Error in module (nyaa_pointsgame): Non-ASCII character '\xc3' in file D:\03. Projeler\Web projeleri\nyaa\botnew\nyaa\pointsgame.py on line 232, but no encoding declared; see http://www.python.org/peps/pep-0263.html for details (pointsgame.py, line 232)

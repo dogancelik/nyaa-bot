@@ -1,0 +1,1 @@
+nyaa-bot is an IRC bot. read docs for more info.
