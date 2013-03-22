@@ -36,7 +36,7 @@ class nyaabot:
   def __init__(self):
     self.load_handlers()
     self.irc.add_global_handler("all_events", self.process_messages)
-    self.server.connect (
+    self.server.connect(
       config.NETWORK,
       config.PORT,
       config.NICK,
@@ -155,7 +155,7 @@ class nyaabot:
             logger.debug("Users: %s - Channels: %s", users, channels)
             if not users == config.USERS.ALL:
               if type(users) is list:
-                if not nick in users:
+                if not nick.lower() in map(lambda x: x.lower(), users):
                   continue
               elif type(users) is int:
                 if users == config.USERS.OP_UP and not isopup:

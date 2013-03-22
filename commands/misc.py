@@ -1,7 +1,7 @@
 import config
 
 def help(server=None, channel=None, **kwargs):
-  server.privmsg(channel, "http://nyaa-nyaa.com/bot")
+  server.privmsg(channel, "http://nyaa-nyaa.com/bot.html")
 
 help.settings = {
   "events": config.EVENTS.PUBMSG,

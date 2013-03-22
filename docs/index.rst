@@ -18,11 +18,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   commands
-   nyaa
-   config
-
-To start nyaa-bot, go to nyaa-bot's root directory and type :command:`nyaa-bot` (for Windows) or :command:`./nyaa-bot` (for Linux)
+   quickstart
+   packages
 
 Indices and tables
 ==================
