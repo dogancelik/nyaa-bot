@@ -9,13 +9,3 @@ help.settings = {
   "channels": config.CHANNELS.MAIN,
   "users": config.USERS.ALL
 }
-
-def watch_nick(nick=None, text=None, **kwargs):
-  pass
-
-watch_nick.settings = {
-  "events": config.EVENTS.PUBMSG,
-  "text": r".*",
-  "channels": config.CHANNELS.MAIN,
-  "users": config.USERS.ALL
-}

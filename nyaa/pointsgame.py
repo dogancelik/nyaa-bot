@@ -1,27 +1,14 @@
-"""
-  A game module, uses sqlite as the database engine.
-"""
-
 import sqlite3
-import md5
+from hashlib import md5
+from uuid import getnode
 import random
 import logging
 import datetime
-import threading
-import uuid
 import os
-import math
 
 db = sqlite3.connect(os.path.join(os.path.dirname(__file__), "pointsgame.db"), detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False)
-
-# Logging
 logger = logging.getLogger("game")
 logger.setLevel(logging.DEBUG)
-#ch = logging.StreamHandler()
-#ch.setLevel(logging.INFO)
-#formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
-#ch.setFormatter(formatter)
-#logger.addHandler(ch)
 
 def create_tables():
   cur = db.cursor()
@@ -42,24 +29,28 @@ def drop_tables():
   db.commit()
 
 def add_player(name, point=0):
+  if select_player_by_name(name) is not None:
+    logger.error("User '%s' already exists", name)
+    return False
   cur = db.cursor()
-  cur.execute("INSERT INTO players VALUES(NULL, '{}', {})".format(name, point))
+  cur.execute("INSERT INTO players VALUES(NULL, ?, ?)", (name, point))
   db.commit()
+  return select_player_by_id(cur.lastrowid)
 
 def get_special_key(id):
-  m = md5.new()
-  m.update(str(uuid.getnode()))
-  m.update(str(id))
-  return m.hexdigest()
+  hash = md5()
+  hash.update(str(getnode()))
+  hash.update(str(id))
+  return hash.hexdigest()
 
 def select_player_by_id(id):
   cur = db.cursor()
-  cur.execute("SELECT * FROM players WHERE id='{}'".format(id))
+  cur.execute("SELECT * FROM players WHERE id=?", (id, ))
   return cur.fetchone()
 
 def select_player_by_name(name):
   cur = db.cursor()
-  cur.execute("SELECT * FROM players WHERE name='{}'".format(name))
+  cur.execute("SELECT * FROM players WHERE name=?", (name, ))
   return cur.fetchone()
 
 def get_all_players():
@@ -100,7 +91,7 @@ def transfer_points(old_id, new_id, points=0):
 def enter_bet(user_id, point):
   if select_player_by_id(user_id)[2] >= point > 0:
     take_points(user_id, 4, point)
-    a = point / random.randrange(345,456)
+    a = point / random.randrange(345, 456)
     random_between = int(2 ** a + (1 if a < 1 else round(a)))
     if random.randrange(random_between + 1) == random_between:
       logger.info("User %s has won the bet (Points: +%s)", user_id, point*2)
@@ -183,7 +174,7 @@ def last_login(user_id, not_login=False):
 
 def get_welcome(name):
   cur = db.cursor()
-  cur.execute("SELECT * FROM welcome WHERE name='{}'".format(name))
+  cur.execute("SELECT * FROM welcome WHERE name=?", (name, ))
   return cur.fetchone()
 
 def set_welcome(name, text):
@@ -198,16 +189,6 @@ def set_welcome(name, text):
     cur.execute("INSERT INTO welcome VALUES(?, ?)", (name, text))
     db.commit()
     logger.info("Player %s created their welcome message", name)
-
-"""
-# For bot
-def every_hour_check(server, channel):
-  threading.Timer(3600.0, every_hour_check).start()
-  #for x in server.names(channel):
-  # daily_login_check(name)
-  #lotto_check()
-  pass
-"""
 
 LOGIN_POINTS = 10
 
@@ -237,7 +218,7 @@ def daily_all_check(current_players, player_callback):
 def daily_player_check(name):
   player = select_player_by_name(name)
   if player is None:
-    return -1
+    return None
   user_id = player[0]
 
   last_date = last_login(user_id)
@@ -249,9 +230,9 @@ def daily_player_check(name):
     points = LOGIN_POINTS
     give_points(user_id, 0, points)
     logger.info("User %s has logged in for today! (Points: +%s)", user_id, points)
-    return points
+    return True
   else:
-    return 0
+    return False
 
 """
   Transaction types:
