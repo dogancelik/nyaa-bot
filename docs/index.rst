@@ -19,7 +19,8 @@ Contents:
    :maxdepth: 2
 
    quickstart
-   packages
+   plugins
+   nyaa
 
 Indices and tables
 ==================

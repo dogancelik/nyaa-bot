@@ -4,3 +4,4 @@ docs/_build
 error.log
 pointsgame.db
 calendar.json
+.idea/

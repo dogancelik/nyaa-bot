@@ -1,3 +1,4 @@
+import time
 import config
 import irclib
 import types
@@ -28,23 +29,21 @@ sublogger = logger.getChild("sub")
 
 
 class nyaabot:
+  PLUGINS_DIR = "plugins"
+
   irc = irclib.IRC()
   server = irc.server()
-  commands = {} # Contains all modules inside commands directory
-  handlers = [] # Contains all handlers from imported modules
+  plugins = {}  # Contains all plugins/modules inside commands directory
+  handlers = []  # Contains all handlers from imported plugins/modules
 
   def __init__(self):
     self.load_handlers()
     self.irc.add_global_handler("all_events", self.process_messages)
-    self.server.connect(
-      config.NETWORK,
-      config.PORT,
-      config.NICK,
-      ircname=config.NAME
-    )
+    self.irc.add_global_handler("disconnect", self.process_disconnect)
+    self.irc.add_global_handler("welcome", self.process_connect)
 
-    for channel in config.CHANNELS.INIT:
-      self.server.join(channel)
+    self.server.connect(config.NETWORK, config.PORT, config.NICK, ircname=config.NAME)
+    self.join_channel()
 
     self.processor_thread = threading.Thread(target=self.processor)
     self.processor_thread.name = "IRC Processor"
@@ -55,23 +54,23 @@ class nyaabot:
     while True:
       self.irc.process_forever()
 
-  def load_handlers(self, load=False):
-    if load:
+  def load_handlers(self, reload=False):
+    if reload:
       self.handlers = []
-      for command in copy.copy(self.commands):
+      for plugin in copy.copy(self.plugins):
         try:
-          logger.debug("Removing module for reload: %s", command)
-          del self.commands[command]
-          del sys.modules[command]
+          logger.debug("Removing module for reload: %s", plugin)
+          del self.plugins[plugin]
+          del sys.modules[plugin]
         except KeyError, e:
-          logger.error("Module %s is already removed from system", command)
+          logger.error("Module %s is already removed from system", plugin)
         else:
-          logger.info("Module %s removed from system successfully", command)
+          logger.info("Module %s removed from system successfully", plugin)
 
     the_file = sys.argv[0] # __file__ if sys.platform == 'win32' else sys.argv[0]
     sys.path.append(os.path.dirname(the_file))
     main_path = os.path.dirname(os.path.abspath(the_file))
-    for (paths, dirs, files) in os.walk("commands"):
+    for (paths, dirs, files) in os.walk(self.PLUGINS_DIR):
       files = [f for f in files if f.endswith(".py") and not f.startswith("__")]
       dir_path = os.path.join(main_path, paths)
       logger.debug("Current dir: %s", dir_path)
@@ -81,7 +80,7 @@ class nyaabot:
         modulename = os.path.basename(command_file)[:-3]
         logger.debug("Loading module: %s", command_file)
         try:
-          self.commands[modulename] = importlib.import_module(modulename)
+          self.plugins[modulename] = importlib.import_module(modulename)
         except Exception, e:
           logger.error("Error in module (%s): %s" % (modulename, str(e)))
           sys.exit(1)
@@ -90,14 +89,14 @@ class nyaabot:
       os.chdir(main_path)
     sys.path.pop()
 
-    for command in self.commands:
-      cmdmod = self.commands[command]
-      logger.debug("Inspecting module for handlers: %s", cmdmod.__name__)
-      if os.path.dirname(cmdmod.__file__) != "":
-        logger.warning("Module '%s' may be conflicting with another module", cmdmod.__name__)
-        logger.warning("Module path: %s", cmdmod.__file__)
-      for function_name in dir(cmdmod):
-        function = getattr(cmdmod, function_name)
+    for plugin in self.plugins:
+      module = self.plugins[plugin]
+      logger.debug("Inspecting module for handlers: %s", module.__name__)
+      if os.path.dirname(module.__file__) != "":
+        logger.warning("Module '%s' may be conflicting with another module", module.__name__)
+        logger.warning("Module path: %s", module.__file__)
+      for function_name in dir(module):
+        function = getattr(module, function_name)
         if type(function) == types.FunctionType:
           try:
             settings = getattr(function, "settings")
@@ -116,11 +115,12 @@ class nyaabot:
   def process_messages(self, server, event):
     if event.eventtype() == "all_raw_messages":
       return
+
     logger.debug("%s: %s - %s: %s" % (event.eventtype(), event.source(), event.target(), event.arguments()))
 
     nick = userhost = host = event.source()
     try:
-      if ('!' in event.source()):
+      if '!' in event.source():
         nick = irclib.nm_to_n(event.source())
         userhost = irclib.nm_to_uh(event.source())
         host = irclib.nm_to_h(event.source())
@@ -151,7 +151,7 @@ class nyaabot:
               ishopup = server.hasaccess(channel, nick)
               isopup = server.isop(channel, nick)
               logger.debug("VoiceUp: %s - HopUp: %s - OpUp: %s", isvoiceup, ishopup, isopup)
-            
+
             logger.debug("Users: %s - Channels: %s", users, channels)
             if not users == config.USERS.ALL:
               if type(users) is list:
@@ -182,6 +182,28 @@ class nyaabot:
           except:
             logger.exception("Error when executing %s for %s", function_name, event.eventtype())
 
+  def join_channel(self, channels=config.CHANNELS.INIT):
+    if type(channels) == str:
+      self.server.join(channels)
+    elif channels == list:
+      for channel in channels:
+        self.server.join(channel)
+
+  def process_disconnect(self, server, event):
+    logger.info("Disconnected from server")
+    while server.connected == 0:
+      logger.info("Trying to reconnect to server...")
+      try:
+        server.connect(config.NETWORK, config.PORT, config.NICK, ircname=config.NAME)
+      except Exception, e:
+        logger.error("Error '%s' while trying to reconnect", str(e))
+        time.sleep(60)
+    self.join_channel()
+
+  def process_connect(self, server, event):
+    logger.info("Connected to server")
+
 if __name__ == "__main__":
   global nb
   nb = nyaabot()
+  cmd = nb.server.send_raw

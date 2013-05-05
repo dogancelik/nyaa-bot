@@ -1,7 +1,3 @@
-"""
-  Topic manager for #nyaa-nyaa
-"""
-
 import re
 
 class TopicChat(object):

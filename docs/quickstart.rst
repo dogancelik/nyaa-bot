@@ -48,8 +48,7 @@ If you are running Linux:
 
     $ . nyaa-bot
 
-If you are running Windows:
-
-::
+If you are running Windows::
 
     > nyaa-bot
+

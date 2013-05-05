@@ -12,7 +12,7 @@ logger.setLevel(logging.DEBUG)
 
 def create_tables():
   cur = db.cursor()
-  cur.execute("CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT, point INTEGER)")
+  cur.execute("CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT COLLATE NOCASE, point INTEGER)")
   cur.execute("CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, user_id INTEGER, t_type INTEGER, t_point INTEGER, t_reason TEXT, t_date TIMESTAMP)")
   cur.execute("CREATE TABLE IF NOT EXISTS purchase (id INTEGER PRIMARY KEY, user_id INTEGER, item_id INTEGER, item_count INTEGER, p_start TIMESTAMP, p_end TIMESTAMP)")
   cur.execute("CREATE TABLE IF NOT EXISTS welcome (name TEXT PRIMARY KEY, message TEXT)")

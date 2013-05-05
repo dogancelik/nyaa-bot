@@ -1,45 +1,40 @@
-*commands* package
-================
-*commands* is a package that holds every IRC command you want to use in your nyaa-bot.
+Plugins
+=======
+Every file in ``plugins`` directory is a plugin. Easy as that.
 
-nyaa-bot will import all modules in this package except the modules with ``__`` prefix.
+A plugin can hold multiple IRC commands.
 
-Every module in this package can hold multiple commands in it.
-
-Required packages for default modules
+Required packages for default plugins
 -------------------------------------
-If you are going to use the default modules, you need to install these packages (with `pip <http://www.pip-installer.org/>`_):
+If you are going to use the default plugins, you need to install these packages (with `pip <http://www.pip-installer.org/>`_):
 
-* pytz
-* python-dateutil
-* requests
+* pytz - https://pypi.python.org/pypi/pytz
+* python-dateutil - https://pypi.python.org/pypi/python-dateutil
+* requests - https://pypi.python.org/pypi/requests
 
-Hello world (writing your first *commands* module)
----------------------------------------------------
-Writing a *commands* module is easy.
+"Hello World" --- writing your first plugin
+-------------------------------------------
+Writing a plugin is easy as pie!
 
 Create your module
-..................
-Create a module in *commands* package and name it whatever you want but **make sure its name doesn't conflict with other modules**.
-
-For example: in our ``nyaa`` package, we have a module named :module:`nyaa.gcalendar`, this means we can't create a module
-named ``gcalendar`` in our ``commands`` package
+__________________
+First, create a file in ``plugins`` directory. Name it whatever you want as long as it ends with ``.py`` and doesn't conflict with any existing package modules (so don't make a file named ``gcalendar.py`` because there is already one in ``nyaa`` directory)
 
 Import constants
-................
+________________
 All constants reside in ``config`` module so you should import it::
 
     import config
 
-...then define a function
-.................
+Define a function
+_________________
 ::
 
     def hello_world(server=None, channel=None, nick=None, **kwargs):
       server.privmsg(channel, "Hello %s" % nick)
 
-...and finally define settings for it
-......................
+Finally define settings for it
+______________________________
 ::
 
     hello_world.settings = {
@@ -51,13 +46,13 @@ All constants reside in ``config`` module so you should import it::
 
 Now you can start your nyaa-bot and typing in ``Hello`` in any channel will trigger your ``hello_world`` function.
 
-What is ``function_name.settings``?
------------------------------------------
-Every IRC function(the ones that you want to trigger in IRC chat) must have a settings property which contains following:
+What is ``hello_world.settings``?
+_________________________________
+Every function(the ones that you want to trigger in IRC) must have a dictionary property named ``settings`` which contains following:
 
-* Events to watch (contant or list)
+* Events to watch (constant or list)
 * Channels to watch (constant or list)
-* Users to watch (contant or list)
+* Users to watch (constant or list)
 * Text to watch (regex)
 
 Accepted ``channels`` values

@@ -1,7 +1,3 @@
-"""
-    A module for retreiving events from nyaa-nyaa.com's event calendar.
-"""
-
 import urllib2
 import time
 import os
@@ -11,16 +7,10 @@ from datetime import datetime, tzinfo, timedelta
 import pytz
 
 class Calendar:
-  """
-    Calendar class
-  """
   _json_path = os.path.join(os.path.dirname(__file__), 'calendar.json')
 
   @staticmethod
   def download_json():
-    """
-      Downloads the json file and saves it as ``calendar.json``
-    """
     url = 'https://www.googleapis.com/calendar/v3/calendars/opcqa50eg3clgcl00n2l9ral1k%40group.calendar.google.com/events?key=AIzaSyDtVqLW-hhFqVPGBtYI7rVvaN_H58JhGl0'
     wurl = urllib2.urlopen(url)
     wfile = open(Calendar._json_path, 'w')
@@ -29,9 +19,6 @@ class Calendar:
 
   @staticmethod
   def save_json():
-    """
-      Redownloads the json file if its 1 hour old
-    """
     if os.path.exists(Calendar._json_path):
       if time.time() - os.path.getmtime(Calendar._json_path) > 3600:
         Calendar.download_json()
@@ -40,17 +27,11 @@ class Calendar:
 
   @staticmethod
   def reset_json():
-    """
-      Deletes the json file and downloads it again
-    """
     os.remove(Calendar._json_path)
     Calendar.save_json()
 
   @staticmethod
   def load_json():
-    """
-      Loads the json file and returns it as a dictionary
-    """
     Calendar.save_json()
     return json.loads(open(Calendar._json_path, 'r').read())
 
@@ -87,10 +68,6 @@ class Calendar:
 
 
 class TimeFormatter:
-  """
-    Formats the time
-  """
-
   @staticmethod
   def format_output(value, unit):
     if value == 0:
