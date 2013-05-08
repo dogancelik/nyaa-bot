@@ -1,6 +1,8 @@
 import config
-from nyaa import topicmanager
+from .. import topicmanager
+
 topicman = topicmanager.TopicManager()
+
 
 def topic(server=None, nick=None, channel=None, text=None, **kwargs):
   if server.hasaccess(channel, nick):
@@ -15,6 +17,7 @@ def topic(server=None, nick=None, channel=None, text=None, **kwargs):
         changed += topicman.set(key, val)
     if changed > 0:
       server.topic(channel, topicman.output())
+
 
 def topicsingle(server=None, nick=None, channel=None, text=None, **kwargs):
   split = [a for a in text.split(' ', 1) if a]
@@ -38,6 +41,7 @@ def topicsingle(server=None, nick=None, channel=None, text=None, **kwargs):
       if not topicman.thread or topicman.thread.lower() == 'n/a':
         msg = topicmanager.TopicChat.NoThread
       server.privmsg(channel, msg.format(topicman.thread))
+
 
 topic.settings = {
   "events": config.EVENTS.PUBMSG,

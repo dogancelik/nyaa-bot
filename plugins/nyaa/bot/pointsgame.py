@@ -1,7 +1,7 @@
 import threading
 import config
 import re
-from nyaa import pointsgame
+from .. import pointsgame
 import random
 
 def try_parse_int(val):
@@ -252,8 +252,9 @@ get_names.settings = {
 def daily_login_check(server=None, **kwargs):
   global user_names
   for user_name in user_names:
-    if pointsgame.daily_player_check(user_name) is True:
-      server.notice(user_name, BotChat.DailyLogin % pointsgame.LOGIN_POINTS)
+    points = pointsgame.daily_player_check(user_name)
+    if points > 0:
+      server.notice(user_name, BotChat.DailyLogin % points)
 
 daily_login_check.settings = {
   'events': "endofnames",

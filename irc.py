@@ -41,9 +41,9 @@ class nyaabot:
     self.irc.add_global_handler("all_events", self.process_messages)
     self.irc.add_global_handler("disconnect", self.process_disconnect)
     self.irc.add_global_handler("welcome", self.process_connect)
+    self.irc.add_global_handler("endofmotd", self.process_ready)
 
     self.server.connect(config.NETWORK, config.PORT, config.NICK, ircname=config.NAME)
-    self.join_channel()
 
     self.processor_thread = threading.Thread(target=self.processor)
     self.processor_thread.name = "IRC Processor"
@@ -54,47 +54,43 @@ class nyaabot:
     while True:
       self.irc.process_forever()
 
-  def load_handlers(self, reload=False):
-    if reload:
+  def load_handlers(self, reload_modules=False):
+    if reload_modules:
       self.handlers = []
       for plugin in copy.copy(self.plugins):
         try:
-          logger.debug("Removing module for reload: %s", plugin)
-          del self.plugins[plugin]
+          logger.debug("Reloading module: %s", plugin)
           del sys.modules[plugin]
-        except KeyError, e:
-          logger.error("Module %s is already removed from system", plugin)
+        except Exception, e:
+          logger.error("Error '%s' while reloading plugin '%s'", str(e), plugin)
         else:
-          logger.info("Module %s removed from system successfully", plugin)
+          logger.info("Reloaded module: %s", plugin)
+      self.plugins = {}
 
-    the_file = sys.argv[0] # __file__ if sys.platform == 'win32' else sys.argv[0]
-    sys.path.append(os.path.dirname(the_file))
+    the_file = sys.argv[0]  # __file__ (win32)
     main_path = os.path.dirname(os.path.abspath(the_file))
-    for (paths, dirs, files) in os.walk(self.PLUGINS_DIR):
+    for (paths, dirs, files) in os.walk(os.path.join(main_path, self.PLUGINS_DIR)):
       files = [f for f in files if f.endswith(".py") and not f.startswith("__")]
-      dir_path = os.path.join(main_path, paths)
-      logger.debug("Current dir: %s", dir_path)
+      abs_path = paths  # because we use os.path.join(main_path, self.PLUGINS_DIR) in walk
+      rel_path = os.path.relpath(paths, main_path)
+      logger.debug("Current dir: %s", abs_path)
       logger.debug("Found modules: %s", files)
-      os.chdir(dir_path)
       for command_file in files:
-        modulename = os.path.basename(command_file)[:-3]
+        file_name = os.path.basename(command_file)[:-3]
+        module_name = re.sub(r"[\\/]", ".", rel_path) + "." + file_name
         logger.debug("Loading module: %s", command_file)
         try:
-          self.plugins[modulename] = importlib.import_module(modulename)
+          self.plugins[module_name] = importlib.import_module(module_name)
         except Exception, e:
-          logger.error("Error in module (%s): %s" % (modulename, str(e)))
+          logger.error("Error in module (%s): %s" % (file_name, str(e)))
+          raise e
           sys.exit(1)
         else:
-          logger.info("Imported module: %s", modulename)
-      os.chdir(main_path)
-    sys.path.pop()
+          logger.info("Imported module: %s", module_name)
 
     for plugin in self.plugins:
       module = self.plugins[plugin]
       logger.debug("Inspecting module for handlers: %s", module.__name__)
-      if os.path.dirname(module.__file__) != "":
-        logger.warning("Module '%s' may be conflicting with another module", module.__name__)
-        logger.warning("Module path: %s", module.__file__)
       for function_name in dir(module):
         function = getattr(module, function_name)
         if type(function) == types.FunctionType:
@@ -185,7 +181,7 @@ class nyaabot:
   def join_channel(self, channels=config.CHANNELS.INIT):
     if type(channels) == str:
       self.server.join(channels)
-    elif channels == list:
+    elif isinstance(channels, list):
       for channel in channels:
         self.server.join(channel)
 
@@ -198,12 +194,16 @@ class nyaabot:
       except Exception, e:
         logger.error("Error '%s' while trying to reconnect", str(e))
         time.sleep(60)
-    self.join_channel()
 
   def process_connect(self, server, event):
     logger.info("Connected to server")
 
+  def process_ready(self, server, event):
+    if len(config.NICKPWD) > 0:
+      server.privmsg('nickserv', 'identify %s' % config.NICKPWD)
+    self.join_channel()
+
 if __name__ == "__main__":
-  global nb
   nb = nyaabot()
   cmd = nb.server.send_raw
+  r = lambda: nb.load_handlers(True)

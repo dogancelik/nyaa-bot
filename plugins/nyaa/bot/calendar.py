@@ -1,5 +1,5 @@
 import config
-from nyaa import gcalendar
+from .. import gcalendar
 
 class BotCalendarChat:
   XLeftToY = u"{1} left to 4'{0}'"

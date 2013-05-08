@@ -12,10 +12,9 @@ class Calendar:
   @staticmethod
   def download_json():
     url = 'https://www.googleapis.com/calendar/v3/calendars/opcqa50eg3clgcl00n2l9ral1k%40group.calendar.google.com/events?key=AIzaSyDtVqLW-hhFqVPGBtYI7rVvaN_H58JhGl0'
-    wurl = urllib2.urlopen(url)
-    wfile = open(Calendar._json_path, 'w')
-    wfile.write(wurl.read())
-    wfile.close()
+    file = open(Calendar._json_path, 'w')
+    file.write(urllib2.urlopen(url).read())
+    file.close()
 
   @staticmethod
   def save_json():
