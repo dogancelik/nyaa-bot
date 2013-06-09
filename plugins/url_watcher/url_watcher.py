@@ -1,9 +1,17 @@
 # -*- coding: utf8 -*-
+"""
+  *URL Watcher* Plugin
+  --------------------
+  Watches HTTP/S URLs and gives detailed info when URLs are from YouTube or 4chan. Otherwise if it's a page, it shows the page title;
+  if it's a binary file, shows file size and file type.
+
+  Bot ignores URLs when message has ``!nk`` in it
+"""
+import utils.plugin
 import itertools
-import config
 import re
 import requests
-from nyaa import page_parsers
+import page_parsers
 
 REGEX_URI = ur"((https?://)?\w{2,}\.\w{2,4}(\.\w{2,4})?[\S]*(?<![\[\]\.\{\}]))"
 COMPILED_REGEX = re.compile(REGEX_URI, re.I | re.U)
@@ -30,7 +38,7 @@ NICK_IGNORE = ["Hisao-bot", "godzilla"]
 WATCH_HEADERS = {'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
 
 
-def watch_url(server=None, nick=None, channel=None, text=None, sublogger=None, **kwargs):
+def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kwargs):
   if nick in NICK_IGNORE or max([search in text for search in TEXT_IGNORE]):
     return
 
@@ -42,8 +50,10 @@ def watch_url(server=None, nick=None, channel=None, text=None, sublogger=None, *
       if uri[0].find("http:") == -1 and uri[0].find("https:") == -1:
         new_url = "http://" + uri[0]
       response = requests.get(new_url, headers=WATCH_HEADERS)
+      if response.headers['content-type'].find("charset") == -1:
+        response.encoding = "utf-8"  # for sites without Content-Type(charset) header
     except requests.exceptions.RequestException, e:
-      sublogger.error("Error '%s' occurred on URL '%s'", str(e), uri[0])
+      logger.error("Error '%s' occurred on URL '%s'", str(e), uri[0])
       return
 
     content_type = response.headers['content-type']
@@ -72,10 +82,10 @@ def watch_url(server=None, nick=None, channel=None, text=None, sublogger=None, *
             parser.views if parser.views is not False else "N/A"
           )
 
-          sublogger.error(parser.title)
-          sublogger.error(parser.uploader)
-          sublogger.error(parser.stars)
-          sublogger.error(parser.views)
+          logger.error(parser.title)
+          logger.error(parser.uploader)
+          logger.error(parser.stars)
+          logger.error(parser.views)
         else:
           page_title = page_parsers.parse_title(response.text)
       else:
@@ -90,8 +100,8 @@ def watch_url(server=None, nick=None, channel=None, text=None, sublogger=None, *
 
 
 watch_url.settings = {
-  'events': config.EVENTS.PUBMSG,
+  'events': utils.plugin.EVENTS.PUBMSG,
   'text': r".*" + REGEX_URI,
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': utils.plugin.CHANNELS.ALL,
+  'users': utils.plugin.USERS.ALL
 }

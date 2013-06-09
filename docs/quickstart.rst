@@ -20,24 +20,16 @@ There is a sample configuration file in the directory, so we copy that:
 
 .. code-block:: bash
 
-    $ cp config.sample.py config.py
+    $ cp config_sample.py config.py
 
 Then edit *config.py* as you wish.
 
 config.py --- configuration file
 ................................
-Each variable with their explanations:
+Config file is pretty self explanatory but I will try to explain them one by one.
 
-::
-
-    import logging
-    LOGLEVEL = logging.DEBUG # Logging level
-
-    NETWORK = 'irc.rizon.net' # IRC server you want to connect to
-    PORT = 6667 # Server port
-    NICK = 'Nyaa-Bot' # Nick
-    NAME = 'Nyaa~' # Name
-    NICKPWD = 'Nyan' # Identify for NickServ
+.. automodule:: config_sample
+   :members:
 
 Starting nyaa-bot
 -----------------

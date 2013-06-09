@@ -1,4 +1,8 @@
-import config
+"""
+  CTCP Reply plugin
+  This is required on Rizon IRC Network.
+"""
+import utils.plugin
 
 
 def reply(server=None, nick=None, **kwargs):
@@ -6,8 +10,8 @@ def reply(server=None, nick=None, **kwargs):
 
 
 reply.settings = {
-  'channels': config.CHANNELS.ALL,
+  'channels': utils.plugin.CHANNELS.ALL,
   'events': ["ctcp"],
-  'users': config.USERS.ALL,
+  'users': utils.plugin.USERS.ALL,
   'text': r"VERSION"
 }

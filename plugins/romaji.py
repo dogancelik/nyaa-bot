@@ -1,4 +1,36 @@
-import config
+# -*- coding: utf-8 -*-
+"""
+  *Romaji* (Translation/Transliteration) Plugin
+  ---------------------------------------------
+  This plugin can both translate and transliterate a Japanese word or sentence to English vice versa.
+
+  This plugin uses Bing API.
+
+  Usage::
+
+    .je こんにちは (Japanese to English)
+    .ej Hello (English to Japanese)
+    .re nihongo (Romaji to English - definition only)
+    .rj nihongo (Romaji to Japanese - definition only)
+
+  Chaining
+  ________
+
+  You can chain commands like this::
+
+    .rje doumo (Romaji to Japanese to English)
+    .jejej ごめんなさい (Jap to Eng to Jap to Eng to Jap...)
+
+  Other languages
+  _______________
+
+  They need love too, right?::
+
+    .tr en de Hello World (English to German)
+    .tr tr en Merhaba Dünya (Turkish to English)
+
+"""
+import utils.plugin
 import re
 import requests
 from types import BooleanType
@@ -32,6 +64,7 @@ JE_START = u'<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/"
 JE_END = u'</string>'
 JE_REGEX = r"\.([jre]{2,6}) (.*)"
 
+
 def translate_internal(tr_from, tr_to, text):
   req = requests.get(TR_URL.format(text, tr_from, tr_to))
   try:
@@ -40,6 +73,7 @@ def translate_internal(tr_from, tr_to, text):
   except Exception, e:
     raise e
   return req.text[start:end]
+
 
 def translate(server=None, nick=None, channel=None, text=None, **kwargs):
   command, tr_from, tr_to, q_text = text.split(" ", 3)
@@ -53,7 +87,8 @@ KANJI_MATCH_END = "</span>"
 ENG_MATCH = '<td class="meanings_column">'
 ENG_MATCH_END = '</td>'
 
-def jisho_internal(word, english = False):
+
+def jisho_internal(word, english=False):
   req = requests.get(JISHO_URL.format(word, "") if english is False else JISHO_URL.format("", word))
   # English
   start = req.text.index(ENG_MATCH) + len(ENG_MATCH)
@@ -68,7 +103,8 @@ def jisho_internal(word, english = False):
     end = req.text.index(KANJI_MATCH_END, start)
   kana_def = req.text[start:end].strip()
   
-  return (english_def, kana_def)
+  return english_def, kana_def
+
 
 def jptranslate_internal(to_en, text):
   j2e = True if to_en == "e" else False
@@ -77,6 +113,7 @@ def jptranslate_internal(to_en, text):
   else:
     tr_text = translate_internal("en", "ja", text)
   return tr_text
+
 
 def jptranslate(server=None, nick=None, channel=None, text=None, **kwargs):
   command, query = re.compile(JE_REGEX, re.I).match(text).groups()
@@ -105,22 +142,22 @@ def jptranslate(server=None, nick=None, channel=None, text=None, **kwargs):
     ))
 
 translate.settings = {
-  "events": config.EVENTS.PUBMSG,
-  "text": r"\.tr .*",
-  "channels": config.CHANNELS.ALL,
-  "users": config.USERS.ALL
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': r"\.tr .*",
+  'channels': utils.plugin.CHANNELS.ALL,
+  'users': utils.plugin.USERS.ALL
 }
 
 romaji.settings = {
-  "events": config.EVENTS.PUBMSG,
-  "text": r'\.r .*',
-  "channels": config.CHANNELS.ALL,
-  "users": config.USERS.ALL
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': r'\.r .*',
+  'channels': utils.plugin.CHANNELS.ALL,
+  'users': utils.plugin.USERS.ALL
 }
 
 jptranslate.settings = {
-  "events": config.EVENTS.PUBMSG,
-  "text": JE_REGEX,
-  "channels": config.CHANNELS.ALL,
-  "users": config.USERS.ALL
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': JE_REGEX,
+  'channels': utils.plugin.CHANNELS.ALL,
+  'users': utils.plugin.USERS.ALL
 }

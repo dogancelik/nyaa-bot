@@ -11,7 +11,7 @@ nyaa-bot is an IRC bot. It is written for nyaa-nyaa.com's IRC channel #nyaa-nyaa
 It supports:
 
 * Channel, user, action, message specific commands
-* Partial module reloading
+* Manual/Auto plugin reload
 
 Contents:
 
@@ -19,8 +19,8 @@ Contents:
    :maxdepth: 2
 
    quickstart
-   plugins
-   nyaa
+   plugins/index
+   utils
 
 Indices and tables
 ==================

@@ -1,3 +1,4 @@
+import utils.plugin
 import config
 from .. import topicmanager
 
@@ -44,15 +45,15 @@ def topicsingle(server=None, nick=None, channel=None, text=None, **kwargs):
 
 
 topic.settings = {
-  "events": config.EVENTS.PUBMSG,
-  "text": r'\.topic.*',
-  "channels": config.CHANNELS.MAIN,
-  "users": config.USERS.ALL
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': r'\.topic.*',
+  'channels': config.MAIN_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
 
 topicsingle.settings = {
-  "events": config.EVENTS.PUBMSG,
-  "text": r'\.(thread|host).*',
-  "channels": config.CHANNELS.MAIN,
-  "users": config.USERS.ALL
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': r'\.(thread|host).*',
+  'channels': config.MAIN_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }

@@ -1,8 +1,12 @@
-import threading
+import utils.plugin
 import config
+import threading
 import re
 from .. import pointsgame
 import random
+
+WATCH_CHANNELS = config.MAIN_CHANNELS + config.DEV_CHANNELS
+
 
 def try_parse_int(val):
   try:
@@ -10,10 +14,12 @@ def try_parse_int(val):
   except ValueError:
     return None
 
+
 def parse_nickpointreason(text):
   stext = text.strip().split(" ", 3)
-  if (len(stext) < 3): return False
+  if len(stext) < 3: return False
   return [stext[1], stext[2], "" if len(stext) == 3 else stext[3]]
+
 
 class BotChat(object):
   BuyItemSuccessful = "{} has bought {}!"
@@ -32,6 +38,7 @@ class BotChat(object):
   WelcomeDefault = "Hello {}-san!"
   Pets = "pets {}"
 
+
 def buy_item(server=None, nick=None, channel=None, text=None, **kwargs):
   item_id = try_parse_int(text.split(' ', 1)[1])
   if item_id is None: return
@@ -45,11 +52,12 @@ def buy_item(server=None, nick=None, channel=None, text=None, **kwargs):
     server.privmsg(channel, BotChat.BuyItemUnsuccessful.format(nick))
 
 buy_item.settings = {
-  'events': config.EVENTS.PUBMSG,
+  'events': utils.plugin.EVENTS.PUBMSG,
   'text': r"\.buy.*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def store(server=None, nick=None, **kwargs):
   server.notice(nick, BotChat.MyStats.format(pointsgame.select_player_by_name(nick)[2]))
@@ -59,11 +67,12 @@ def store(server=None, nick=None, **kwargs):
     index += 1
 
 store.settings = {
-  'events': config.EVENTS.PUBMSG,
+  'events': utils.plugin.EVENTS.PUBMSG,
   'text': r"\.store",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def bet(server=None, nick=None, channel=None, text=None, **kwargs):
   rawpoint = text.split(' ', 1)[1]
@@ -92,7 +101,7 @@ def bet(server=None, nick=None, channel=None, text=None, **kwargs):
       times_win += 1
     elif last_bet < 0:
       times_lose += 1
-  
+
   if times > 1:
     player = pointsgame.select_player_by_name(nick)
     message = BotChat.MultiBet.format(nick, times_win, times_win*point*2, times_lose, times_lose*point, player[2])
@@ -109,43 +118,54 @@ def bet(server=None, nick=None, channel=None, text=None, **kwargs):
       server.notice(nick, BotChat.BetNotEnoughPoints.format(nick))
 
 bet.settings = {
-  'events': [config.EVENTS.PRIVMSG, config.EVENTS.PUBMSG],
+  'events': utils.plugin.EVENTS.PRIVMSG + utils.plugin.EVENTS.PUBMSG,
   'text': r"\.bet.*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def my_stats(server=None, nick=None, channel=None, text=None, **kwargs):
   params = text.strip().split(' ', 1)
-  query_nick = params[1] if len(params) > 1 else nick 
+  query_nick = params[1] if len(params) > 1 else nick
   player = pointsgame.select_player_by_name(query_nick)
   server.privmsg(channel, BotChat.MyStats.format(player[2]))
 
 my_stats.settings = {
-  'events': [config.EVENTS.PRIVMSG, config.EVENTS.PUBMSG],
+  'events': utils.plugin.EVENTS.PRIVMSG + utils.plugin.EVENTS.PUBMSG,
   'text': r"\.my.*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
 
-def give(server=None, channel=None, nick=None, text=None, sublogger=None, **kwargs):
-  command, user, points = text.split(' ', 2)
-  old_id = pointsgame.select_player_by_name(nick)[0]
-  new_id = pointsgame.select_player_by_name(user)[0]
-  points = try_parse_int(points)
-  if points <= 0 or server.inchannel(channel, user) is False:
+
+def give(server=None, channel=None, nick=None, text=None, **kwargs):
+  command, target_nick, points = text.split(' ', 2)
+
+  source_player = pointsgame.select_player_by_name(nick)
+  target_player = pointsgame.select_player_by_name(target_nick)
+
+  if points == "max":
+    points = source_player[2]
+  else:
+    points = try_parse_int(points)
+
+  if points <= 0 or server.inchannel(channel, target_nick) is False:
     server.notice(nick, BotChat.Requires2People)
-  if pointsgame.transfer_points(old_id, new_id, points):
+    return
+
+  if pointsgame.transfer_points(source_player[0], target_player[0], points):
     server.notice(nick, BotChat.TransferSuccessful)
   else:
     server.notice(nick, BotChat.TransferUnsuccessful)
 
 give.settings = {
-  'events': config.EVENTS.PUBMSG,
-  'text': r"\.(give).*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': r"\.give .*",
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def reward_punish_player(text=None, **kwargs):
   npr = parse_nickpointreason(text)
@@ -159,11 +179,12 @@ def reward_punish_player(text=None, **kwargs):
     pointsgame.punish_player(player[0], npr[1], npr[2])
 
 reward_punish_player.settings = {
-  'events': config.EVENTS.PUBMSG,
+  'events': utils.plugin.EVENTS.PUBMSG,
   'text': r"\.(reward|punish).*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.HALFOP_UP
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.HALFOP_UP
 }
+
 
 def set_welcome(nick=None, text=None, **kwargs):
   if text.find(".reward") > -1 or text.find(".punish") > -1:
@@ -171,17 +192,19 @@ def set_welcome(nick=None, text=None, **kwargs):
   pointsgame.set_welcome(nick, text.split(' ', 1)[1])
 
 set_welcome.settings = {
-  'events': config.EVENTS.PUBMSG,
+  'events': utils.plugin.EVENTS.PUBMSG,
   'text': r"\.(sw|setwelcome).*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def register_player(nick):
   pointsgame.add_player(nick)
   player = pointsgame.select_player_by_name(nick)
   pointsgame.logger.info("User (#%s) %s registered!", player[0], nick)
   pointsgame.daily_player_check(nick)
+
 
 def nick_change_check(channel=None, **kwargs):
   if pointsgame.select_player_by_name(channel) is None:
@@ -190,11 +213,13 @@ def nick_change_check(channel=None, **kwargs):
 nick_change_check.settings = {
   'events': "nick",
   'text': r".*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
 
 channel_to_check = '#nyaa-nyaa'
+
+
 def join_check(server=None, nick=None, channel=None, **kwargs):
   global channel_to_check
   channel_to_check = channel
@@ -218,11 +243,13 @@ def join_check(server=None, nick=None, channel=None, **kwargs):
 join_check.settings = {
   'events': "join",
   'text': "",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
 
 user_names = []
+
+
 def request_names(server=None, **kwargs):
   global user_names, channel_to_check
   user_names = []
@@ -231,11 +258,13 @@ def request_names(server=None, **kwargs):
 request_names.settings = {
   'events': "ping",
   'text': r".*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
 
 nameregex = re.compile("[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*", re.I)
+
+
 def get_names(text=None, **kwargs):
   global user_names
   names = text.split(":", 1)
@@ -245,9 +274,10 @@ def get_names(text=None, **kwargs):
 get_names.settings = {
   'events': "namreply",
   'text': r".*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def daily_login_check(server=None, **kwargs):
   global user_names
@@ -259,20 +289,21 @@ def daily_login_check(server=None, **kwargs):
 daily_login_check.settings = {
   'events': "endofnames",
   'text': r".*",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }
+
 
 def top(server=None, channel=None, **kwargs):
   top = pointsgame.get_top_players()
-  rstr = ""
+  ret = ""
   for i in range(len(top)):
-    rstr += BotChat.TopPlayer.format(i+1, top[i][0], top[i][1])
-  server.privmsg(channel, rstr.strip())
+    ret += BotChat.TopPlayer.format(i+1, top[i][0], top[i][1])
+  server.privmsg(channel, ret.strip())
 
 top.settings = {
-  'events': config.EVENTS.PUBMSG,
+  'events': utils.plugin.EVENTS.PUBMSG,
   'text': r"\.top$",
-  'channels': config.CHANNELS.MAIN + config.CHANNELS.DEV,
-  'users': config.USERS.ALL
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
 }

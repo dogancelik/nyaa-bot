@@ -1,35 +1,16 @@
 import time
 import config
 import irclib
-import types
-import os
-import importlib
 import sys
-import copy
-import re
 import threading
-import logging
+import utils.plugin
+import utils.bot
 import inspect
 
-logger = logging.getLogger()
-logger.setLevel(config.LOGLEVEL)
 
-log_fh = logging.FileHandler("error.log")
-log_fh.setLevel(logging.ERROR)
-logger.addHandler(log_fh)
-
-log_sh = logging.StreamHandler()
-logger.addHandler(log_sh)
-
-log_formatter = logging.Formatter("%(asctime)s %(name)-8s %(levelname)-8s %(message)s", "%m-%d %H:%M")
-log_fh.setFormatter(log_formatter)
-log_sh.setFormatter(log_formatter)
-
-sublogger = logger.getChild("sub")
-
-
-class nyaabot:
+class NyaaBot:
   PLUGINS_DIR = "plugins"
+  THREADED_EVENTS = ["pubmsg", "pubnotice", "privmsg", "privnotice"]
 
   irc = irclib.IRC()
   server = irc.server()
@@ -37,18 +18,34 @@ class nyaabot:
   handlers = []  # Contains all handlers from imported plugins/modules
 
   def __init__(self):
+    self.app_path = utils.bot.get_dir_path(sys.argv[0])
+    self.logger = utils.bot.Logger(config.LOG_LEVEL)
+    self.loader = utils.bot.ModuleLoader(self)
+
     self.load_handlers()
     self.irc.add_global_handler("all_events", self.process_messages)
     self.irc.add_global_handler("disconnect", self.process_disconnect)
     self.irc.add_global_handler("welcome", self.process_connect)
     self.irc.add_global_handler("endofmotd", self.process_ready)
 
-    self.server.connect(config.NETWORK, config.PORT, config.NICK, ircname=config.NAME)
+    self.server.connect(config.NETWORK, config.PORT, config.NICK, ircname=config.NAME, ssl=config.USE_SSL)
 
     self.processor_thread = threading.Thread(target=self.processor)
     self.processor_thread.name = "IRC Processor"
     self.processor_thread.daemon = 1
     self.processor_thread.start()
+
+    if config.WATCH_PLUGINS:
+      try:
+        handler = utils.bot.PyHandler(self)
+        observer = utils.bot.PyWatcher(handler, self.PLUGINS_DIR)
+        observer.start()
+      except Exception, e:
+        self.logger.error("Error when starting when plugins watcher: %s", str(e))
+      else:
+        self.logger.info("Started plugins watcher")
+    else:
+      self.logger.info("Plugins watcher is not enabled")
 
   def processor(self):
     while True:
@@ -56,63 +53,14 @@ class nyaabot:
 
   def load_handlers(self, reload_modules=False):
     if reload_modules:
-      self.handlers = []
-      for plugin in copy.copy(self.plugins):
-        try:
-          logger.debug("Reloading module: %s", plugin)
-          del sys.modules[plugin]
-        except Exception, e:
-          logger.error("Error '%s' while reloading plugin '%s'", str(e), plugin)
-        else:
-          logger.info("Reloaded module: %s", plugin)
-      self.plugins = {}
-
-    the_file = sys.argv[0]  # __file__ (win32)
-    main_path = os.path.dirname(os.path.abspath(the_file))
-    for (paths, dirs, files) in os.walk(os.path.join(main_path, self.PLUGINS_DIR)):
-      files = [f for f in files if f.endswith(".py") and not f.startswith("__")]
-      abs_path = paths  # because we use os.path.join(main_path, self.PLUGINS_DIR) in walk
-      rel_path = os.path.relpath(paths, main_path)
-      logger.debug("Current dir: %s", abs_path)
-      logger.debug("Found modules: %s", files)
-      for command_file in files:
-        file_name = os.path.basename(command_file)[:-3]
-        module_name = re.sub(r"[\\/]", ".", rel_path) + "." + file_name
-        logger.debug("Loading module: %s", command_file)
-        try:
-          self.plugins[module_name] = importlib.import_module(module_name)
-        except Exception, e:
-          logger.error("Error in module (%s): %s" % (file_name, str(e)))
-          raise e
-          sys.exit(1)
-        else:
-          logger.info("Imported module: %s", module_name)
-
-    for plugin in self.plugins:
-      module = self.plugins[plugin]
-      logger.debug("Inspecting module for handlers: %s", module.__name__)
-      for function_name in dir(module):
-        function = getattr(module, function_name)
-        if type(function) == types.FunctionType:
-          try:
-            settings = getattr(function, "settings")
-          except AttributeError:
-            pass
-          else:
-            self.handlers.append(
-              (re.compile(settings["text"], re.I | re.U),
-              function,
-              settings["events"],
-              settings["channels"],
-              settings["users"])
-            )
-            logger.debug("Loaded handler: %s" % function_name)
+      self.loader.remove_all_modules()
+    self.loader.add_all_modules(reload_modules)
 
   def process_messages(self, server, event):
-    if event.eventtype() == "all_raw_messages":
+    if event.eventtype() == "all_raw_messages" or event.eventtype() in config.SKIP_EVENTS:
       return
 
-    logger.debug("%s: %s - %s: %s" % (event.eventtype(), event.source(), event.target(), event.arguments()))
+    self.logger.debug("%s: %s - %s: %s" % (event.eventtype(), event.source(), event.target(), event.arguments()))
 
     nick = userhost = host = event.source()
     try:
@@ -130,14 +78,16 @@ class nyaabot:
     else:
       text = event.arguments()[0] if len(event.arguments()) > 0 else ""
 
-    logger.debug("Processing handlers for event %s", event.eventtype())
-    #, ", ".join([x[1].__name__ for x in self.handlers]))
+    self.logger.debug("Processing handlers for event %s", event.eventtype())
     for handler in self.handlers:
       function_name = handler[1].__name__
       if event.eventtype() in handler[2]:
-        logger.debug("%s is binded to %s", function_name, event.eventtype())
+        if not ("unused_handlers" in config.HIDE_LOGS):
+          self.logger.debug("%s is binded to %s", function_name, event.eventtype())
         if handler[0].match(text):
-          logger.debug("'%s' matched '%s' for %s", text, handler[0].pattern, function_name)
+          if "unused_handlers" in config.HIDE_LOGS:
+            self.logger.debug("%s is binded to %s", function_name, event.eventtype())
+          self.logger.debug("'%s' matched '%s' for %s", text, handler[0].pattern, function_name)
           channels, users = handler[3:5]
 
           if event.eventtype() == "pubmsg" or event.eventtype() == "privmsg":
@@ -146,39 +96,52 @@ class nyaabot:
               isvoiceup = server.hasaccess(channel, nick) or server.isvoice(channel, nick)
               ishopup = server.hasaccess(channel, nick)
               isopup = server.isop(channel, nick)
-              logger.debug("VoiceUp: %s - HopUp: %s - OpUp: %s", isvoiceup, ishopup, isopup)
+              self.logger.info("VoiceUp: %s - HopUp: %s - OpUp: %s", isvoiceup, ishopup, isopup)
 
-            logger.debug("Users: %s - Channels: %s", users, channels)
-            if not users == config.USERS.ALL:
+            self.logger.info("Users: %s - Channels: %s", users, channels)
+            if not users == utils.plugin.USERS.ALL:
               if type(users) is list:
                 if not nick.lower() in map(lambda x: x.lower(), users):
                   continue
               elif type(users) is int:
-                if users == config.USERS.OP_UP and not isopup:
+                if users == utils.plugin.USERS.OP_UP and not isopup:
                   continue
-                elif users == config.USERS.HALFOP_UP and not ishopup:
+                elif users == utils.plugin.USERS.HALFOP_UP and not ishopup:
                   continue
-                elif users == config.USERS.VOICE_UP and not isvoiceup:
+                elif users == utils.plugin.USERS.VOICE_UP and not isvoiceup:
                   continue
               else:
-                logger.error("User bind error: %s", function_name)
+                self.logger.error("User bind error: %s", function_name)
                 continue
 
-            if not channels == config.CHANNELS.ALL:
+            if not channels == utils.plugin.CHANNELS.ALL:
               if type(channels) == list or type(channels) == set:
-                if not channel in channels:
+                if not channel.lower() in map(lambda x: x.lower(), channels):
                   continue
               else:
-                logger.error("Channel bind error: %s", function_name)
+                self.logger.error("Channel bind error: %s", function_name)
                 continue
 
           try:
-            logger.debug("Executing %s for %s", function_name, event.eventtype())
-            handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, sublogger=sublogger)
+            self.logger.info("Executing %s for %s", function_name, event.eventtype())
+            logger = self.logger.getChild(function_name)
+            if event.eventtype() in self.THREADED_EVENTS:
+              thread = threading.Thread(target=handler[1], kwargs={
+                'server': server,
+                'nick': nick,
+                'channel': channel,
+                'text': text,
+                'userhost': userhost,
+                'logger': logger,
+              })
+              thread.daemon = True
+              thread.start()
+            else:
+              handler[1](server=server, nick=nick, channel=channel, text=text, userhost=userhost, logger=logger)
           except:
-            logger.exception("Error when executing %s for %s", function_name, event.eventtype())
+            self.logger.exception("Error when executing %s for %s", function_name, event.eventtype())
 
-  def join_channel(self, channels=config.CHANNELS.INIT):
+  def join_channel(self, channels=config.CHANNELS):
     if type(channels) == str:
       self.server.join(channels)
     elif isinstance(channels, list):
@@ -186,24 +149,25 @@ class nyaabot:
         self.server.join(channel)
 
   def process_disconnect(self, server, event):
-    logger.info("Disconnected from server")
+    self.logger.info("Disconnected from server")
     while server.connected == 0:
-      logger.info("Trying to reconnect to server...")
+      self.logger.info("Trying to reconnect to server...")
       try:
+        time.sleep(10)
         server.connect(config.NETWORK, config.PORT, config.NICK, ircname=config.NAME)
       except Exception, e:
-        logger.error("Error '%s' while trying to reconnect", str(e))
+        self.logger.error("Error '%s' while trying to reconnect", str(e))
         time.sleep(60)
 
   def process_connect(self, server, event):
-    logger.info("Connected to server")
+    self.logger.info("Connected to server")
 
   def process_ready(self, server, event):
     if len(config.NICKPWD) > 0:
-      server.privmsg('nickserv', 'identify %s' % config.NICKPWD)
+      server.privmsg("nickserv", "identify %s" % config.NICKPWD)
     self.join_channel()
 
 if __name__ == "__main__":
-  nb = nyaabot()
+  nb = NyaaBot()
   cmd = nb.server.send_raw
   r = lambda: nb.load_handlers(True)

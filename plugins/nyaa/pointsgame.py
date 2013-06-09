@@ -8,6 +8,7 @@ import os
 
 db = sqlite3.connect(os.path.join(os.path.dirname(__file__), "pointsgame.db"), detect_types=sqlite3.PARSE_DECLTYPES,
                      check_same_thread=False)
+logging.basicConfig()  # To avoid "No handlers found" error
 logger = logging.getLogger("game")
 logger.setLevel(logging.DEBUG)
 
