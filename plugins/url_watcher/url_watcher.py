@@ -35,6 +35,7 @@ def check_size(size):
 
 TEXT_IGNORE = ["!nk"]
 NICK_IGNORE = ["Hisao-bot", "godzilla"]
+HEADER_IGNORE = ["image"]
 WATCH_HEADERS = {'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
 
 
@@ -50,13 +51,16 @@ def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kw
       if uri[0].find("http:") == -1 and uri[0].find("https:") == -1:
         new_url = "http://" + uri[0]
       response = requests.get(new_url, headers=WATCH_HEADERS)
-      if response.headers['content-type'].find("charset") == -1:
+      content_type = response.headers['content-type']
+      if content_type.find("charset") == -1:
         response.encoding = "utf-8"  # for sites without Content-Type(charset) header
     except requests.exceptions.RequestException, e:
       logger.error("Error '%s' occurred on URL '%s'", str(e), uri[0])
       return
 
-    content_type = response.headers['content-type']
+    if max([search in content_type for search in HEADER_IGNORE]):
+      return
+
     is_page = content_type.find("text") > -1
 
     if is_page:
@@ -81,11 +85,6 @@ def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kw
             if parser.stars > 0 else "N/A",
             parser.views if parser.views is not False else "N/A"
           )
-
-          logger.error(parser.title)
-          logger.error(parser.uploader)
-          logger.error(parser.stars)
-          logger.error(parser.views)
         else:
           page_title = page_parsers.parse_title(response.text)
       else:

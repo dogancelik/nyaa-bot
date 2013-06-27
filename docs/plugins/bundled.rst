@@ -18,3 +18,5 @@ If you are going to use the bundled plugins, you may need to install these packa
 .. automodule:: plugins.irc_commands
 
 .. automodule:: plugins.url_watcher.url_watcher
+
+.. automodule:: plugins.urban

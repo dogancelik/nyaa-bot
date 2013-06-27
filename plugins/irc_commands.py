@@ -74,7 +74,7 @@ def join(server=None, nick=None, text=None, **kwargs):
 
 join.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'join.*',
+  'text': r'.join.*',
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }
@@ -88,7 +88,7 @@ def part(server=None, nick=None, text=None, **kwargs):
 
 part.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'\.leave',
+  'text': r'\.leave.*',
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }

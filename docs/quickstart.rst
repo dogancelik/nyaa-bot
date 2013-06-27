@@ -3,14 +3,32 @@ Quick Start
 
 Installation
 ------------
-For the time being, you can only install nyaa-bot locally.
+For the time being, you can only install *nyaa-bot* locally.
 
-To install nyaa-bot:
+To install *nyaa-bot*:
 
 .. code-block:: bash
 
     $ git clone git://github.com/dogancelik/nyaa-bot.git
     $ cd nyaa-bot
+
+There is only one dependency and that is *watchdog* for watching plugin changes.
+
+If you use Ubuntu, you have to install *python-yaml* from the Ubuntu repository first:
+
+.. code-block:: bash
+
+    $ sudo apt-get install python-yaml
+
+Then:
+
+.. code-block:: bash
+
+    $ pip install watchdog
+
+.. note::
+
+    Installing *watchdog* is required but using it is optional.
 
 Configuration
 -------------

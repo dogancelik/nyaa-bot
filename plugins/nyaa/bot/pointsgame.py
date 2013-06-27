@@ -28,12 +28,14 @@ class BotChat(object):
   BetLose = "{} has lost the bet."
   BetNotEnoughPoints = "{}: You don't have enough rupees. Go cut down some hedges or break some pots for more!"
   MultiBet = "{}: Won: {} times (3+{} rupees) - Lost: {} times (4-{} rupees) - Current: {} rupees"
-  MyStats = "Rupees: {}"
+  Stats = "{} a total of 3{} rupees!"
+  Stats_My = "{}: You have"
+  Stats_NotMy = "{} has"
   DailyLogin = "It's.. not like I wanted to give you these %s Rupees... baka!"
   Requires2People = "The player must be in the same channel as you ._."
   TransferSuccessful = "Transfer complete!"
   TransferUnsuccessful = "Not enough rupees desu~"
-  StoreItem = "Item: %s | Price: %s rupee(s) | Active for: %s | To buy: .buy %s"
+  StoreItem = "Item: %s | Price: %s rupee(s) | Active for: %s | Quantity: %s | To buy: .buy %s"
   TopPlayer = "#{}4 {} with2 {} rupees; "
   WelcomeDefault = "Hello {}-san!"
   Pets = "pets {}"
@@ -60,10 +62,10 @@ buy_item.settings = {
 
 
 def store(server=None, nick=None, **kwargs):
-  server.notice(nick, BotChat.MyStats.format(pointsgame.select_player_by_name(nick)[2]))
+  server.notice(nick, BotChat.Stats.format(BotChat.Stats_My.format(nick), pointsgame.select_player_by_name(nick)[2]))
   index = 0
   for item in pointsgame.items:
-    server.notice(nick, BotChat.StoreItem % (item['name'], item['price'], str(item['duration']), index))
+    server.notice(nick, BotChat.StoreItem % (item['name'], item['price'], str(item['duration']), str(item['count']), index))
     index += 1
 
 store.settings = {
@@ -126,10 +128,14 @@ bet.settings = {
 
 
 def my_stats(server=None, nick=None, channel=None, text=None, **kwargs):
+  # TODO: Show bought items that aren't expired
   params = text.strip().split(' ', 1)
   query_nick = params[1] if len(params) > 1 else nick
   player = pointsgame.select_player_by_name(query_nick)
-  server.privmsg(channel, BotChat.MyStats.format(player[2]))
+  server.privmsg(channel, BotChat.Stats.format(
+    BotChat.Stats_My.format(nick) if query_nick == nick else BotChat.Stats_NotMy.format(query_nick),
+    player[2]
+  ))
 
 my_stats.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG + utils.plugin.EVENTS.PUBMSG,
@@ -262,14 +268,14 @@ request_names.settings = {
   'users': utils.plugin.USERS.ALL
 }
 
-nameregex = re.compile("[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*", re.I)
+NAMREPLY_REGEX = re.compile("[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*", re.I)
 
 
 def get_names(text=None, **kwargs):
   global user_names
   names = text.split(":", 1)
   names = names[0] if len(names) == 1 else names[1]
-  user_names.extend(nameregex.findall(names))
+  user_names.extend(NAMREPLY_REGEX.findall(names))
 
 get_names.settings = {
   'events': "namreply",
@@ -304,6 +310,20 @@ def top(server=None, channel=None, **kwargs):
 top.settings = {
   'events': utils.plugin.EVENTS.PUBMSG,
   'text': r"\.top$",
+  'channels': WATCH_CHANNELS,
+  'users': utils.plugin.USERS.ALL
+}
+
+
+def kick(server=None, channel=None, text=None, nick=None, **kwargs):
+  player = pointsgame.select_player_by_name(nick)
+  if pointsgame.has_item(player[0], 5) and pointsgame.use_item(player[0], 5) is not False:
+    kick_nick = text.strip().split(" ", 1)[1]
+    server.kick(channel, kick_nick, "kicked by %s" % nick)
+
+kick.settings = {
+  'events': utils.plugin.EVENTS.PUBMSG,
+  'text': r"\.k(ick)?.*",
   'channels': WATCH_CHANNELS,
   'users': utils.plugin.USERS.ALL
 }

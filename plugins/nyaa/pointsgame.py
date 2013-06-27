@@ -96,7 +96,7 @@ def give_points(user_id, t_type, t_point, t_reason=''):
 def transfer_points(old_id, new_id, points=0):
   old_points = select_player_by_id(old_id)[2] if points is 0 else (
     points if select_player_by_id(old_id)[2] >= points else 0)
-  if (old_points > 0):
+  if old_points > 0:
     take_points(old_id, 2, old_points, "Transfer to {}".format(new_id))
     give_points(new_id, 3, old_points, "Transfer from {}".format(old_id))
     logger.info("Transfer from %s to %s completed successfully (Points sent: %s)", old_id, new_id, old_points)
@@ -108,9 +108,16 @@ def transfer_points(old_id, new_id, points=0):
 
 def enter_bet(user_id, point):
   if select_player_by_id(user_id)[2] >= point > 0:
+    item_factor = 1.00
+    if has_item(user_id, 4):
+      used_item = use_item(user_id, 4)
+      if used_item is not False:
+        logger.info("User %s used an item for more win chance", user_id)
+        item_factor = 0.80
+
     take_points(user_id, 4, point)
     a = point / random.randrange(345, 456)
-    random_between = int(2 ** a + (1 if a < 1 else round(a)))
+    random_between = int((2 ** a + (1 if a < 1 else round(a))) * item_factor)
     if random.randrange(random_between + 1) == random_between:
       logger.info("User %s has won the bet (Points: +%s)", user_id, point * 2)
       give_points(user_id, 5, point * 3)
@@ -141,16 +148,16 @@ def add_to_purchase(user_id, item_id, item_count, start_date, end_date):
 
 def get_purchase(user_id, item_id):
   cur = db.cursor()
-  cur.execute("SELECT p_start, p_end FROM purchase WHERE user_id=? AND item_id=? ORDER BY id DESC LIMIT 1",
+  cur.execute("SELECT * FROM purchase WHERE user_id=? AND item_id=? ORDER BY id DESC LIMIT 1",
               (user_id, item_id))
   return cur.fetchone()
 
 
 def has_item(user_id, item_id):
   datenow = datetime.datetime.now()
-  purchase_dates = get_purchase(user_id, item_id)
-  if purchase_dates is not None:
-    if purchase_dates[0] <= datenow < purchase_dates[1]:
+  purchase = get_purchase(user_id, item_id)
+  if purchase is not None:
+    if purchase[4] <= datenow < purchase[5]:
       logger.debug("User %s already has item %s", user_id, item_id)
       return True
     else:
@@ -161,11 +168,27 @@ def has_item(user_id, item_id):
     return False
 
 
+def use_item(user_id, item_id):
+  purchase = get_purchase(user_id, item_id)
+  purchase_id = purchase[0]
+  item_count = purchase[3]
+
+  if item_count > 0:
+    current_count = item_count - 1
+    cur = db.cursor()
+    cur.execute("UPDATE purchase SET item_count=? WHERE id=?", (current_count, purchase_id))
+    return current_count
+  else:
+    return False
+
+
 items = [
-  dict(name="Scroll of Petting", price=30, duration=datetime.timedelta(weeks=1), count=50),
-  dict(name="Ring of Voice", price=60, duration=datetime.timedelta(weeks=1), count=0),
-  dict(name="Cloak of Admiration", price=90, duration=datetime.timedelta(weeks=1), count=0),
-  dict(name="Scroll of Ultimate Kick", price=120, duration=datetime.timedelta(weeks=1), count=0),
+  dict(name="Scroll of Petting", price=50, duration=datetime.timedelta(weeks=1), count=50),
+  dict(name="Ring of Voice", price=100, duration=datetime.timedelta(weeks=1), count=0),
+  dict(name="Cloak of Admiration", price=200, duration=datetime.timedelta(weeks=1), count=0),
+  dict(name="Scroll of Ultimate Kick", price=250, duration=datetime.timedelta(weeks=1), count=0),
+  dict(name="Book of Fortunes", price=500, duration=datetime.timedelta(days=1), count=10),
+  dict(name="Kick Tickets", price=1000, duration=datetime.timedelta(weeks=1), count=10)
 ]
 
 
