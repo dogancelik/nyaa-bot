@@ -36,7 +36,10 @@ def check_size(size):
 TEXT_IGNORE = ["!nk"]
 NICK_IGNORE = ["Hisao-bot", "godzilla"]
 HEADER_IGNORE = ["image"]
-WATCH_HEADERS = {'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
+WATCH_HEADERS = {
+  'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  'User-Agent': "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7"
+}
 
 
 def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kwargs):

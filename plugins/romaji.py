@@ -62,7 +62,6 @@ J2E_URL = u"http://api.microsofttranslator.com/v2/Http.svc/Translate?text={}&fro
 E2J_URL = u"http://api.microsofttranslator.com/v2/Http.svc/Translate?text={}&from=en&to=ja&appId=1369A68D3D83D36A0CF025458F3AD678B4FF33BF"
 JE_START = u'<string xmlns="http://schemas.microsoft.com/2003/10/Serialization/">'
 JE_END = u'</string>'
-JE_REGEX = r"\.([jre]{2,6}) (.*)"
 
 
 def translate_internal(tr_from, tr_to, text):
@@ -102,7 +101,7 @@ def jisho_internal(word, english=False):
     start = req.text.index(KANA_MATCH) + len(KANA_MATCH)
     end = req.text.index(KANJI_MATCH_END, start)
   kana_def = req.text[start:end].strip()
-  
+
   return english_def, kana_def
 
 
@@ -115,30 +114,39 @@ def jptranslate_internal(to_en, text):
   return tr_text
 
 
-def jptranslate(server=None, nick=None, channel=None, text=None, **kwargs):
-  command, query = re.compile(JE_REGEX, re.I).match(text).groups()
-  firstchar, otherchars = command[:1], command[1:]
-  output = []
-  lastchar = firstchar #.lowercase()
-  output.append((lastchar, query))
-  server.privmsg(channel, u"({}){}".format(
-    output[-1][0],
-    output[-1][1]
+CHAIN_CHAT = u"» ({}) ({}) {color}'{}'"
+CHAIN_REGEX = r"\.([jre]{2,10}) (.*)"
+
+
+def chain_translate(server=None, channel=None, text=None, **kwargs):
+  command, query = re.compile(CHAIN_REGEX, re.I).match(text).groups()
+  command = "".join([char.lower() for char in command])
+  first_char, other_chars = command[:1], command[1:]
+  last_char = first_char
+
+  output = [(last_char, query)]
+  server.privmsg(channel, CHAIN_CHAT.format(
+      1,
+      output[-1][0],
+      output[-1][1],
+      color=2
   ))
-  for char in otherchars:
-    if char == lastchar: continue
-    if lastchar == 'j' and char == 'r':
+  for index, char in enumerate(other_chars):
+    if char == last_char: continue
+    if last_char == 'j' and char == 'r':
       output.append((char, romaji_internal(output[-1][1])))
-    elif lastchar == 'r' and char == 'e':
+    elif last_char == 'r' and char == 'e':
       output.append((char, jisho_internal(output[-1][1])[0]))
-    elif lastchar == 'r' and char == 'j':
+    elif last_char == 'r' and char == 'j':
       output.append((char, jisho_internal(output[-1][1])[1]))
     elif char == 'e' or char == 'j':
       output.append((char, jptranslate_internal(char, output[-1][1])))
-    lastchar = char
-    server.privmsg(channel, u"=> ({}){}".format(
+    last_char = char
+    server.privmsg(channel, CHAIN_CHAT.format(
+      index + 2,
       output[-1][0],
-      output[-1][1]
+      output[-1][1],
+      color=3
     ))
 
 translate.settings = {
@@ -155,9 +163,9 @@ romaji.settings = {
   'users': utils.plugin.USERS.ALL
 }
 
-jptranslate.settings = {
+chain_translate.settings = {
   'events': utils.plugin.EVENTS.PUBMSG,
-  'text': JE_REGEX,
+  'text': CHAIN_REGEX,
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }

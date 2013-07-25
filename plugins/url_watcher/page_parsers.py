@@ -53,7 +53,6 @@ class youtube_page_parser():
     self._parse()
 
   def _parse(self):
-
     likes_start = self.html.find('<span class="likes-count">') + 26
     likes_end = self.html.find("</span>", likes_start)
     try:
@@ -82,9 +81,11 @@ class youtube_page_parser():
     self.title = parse_title(self.html)[:-10]
 
     uploader_index1 = self.html.find("watch7-user-header")
-    uploader_index2 = self.html.find("user/", uploader_index1) + 5
+    uploader_index2 = self.html.find("?feature=watch", uploader_index1) + 1
     uploader_index3 = self.html.find("?feature=watch", uploader_index2)
-    if min(uploader_index1, uploader_index2, uploader_index3) == -1:
+    uploader_index4 = self.html.find('">', uploader_index3) + 2
+    uploader_index5 = self.html.find("</a>", uploader_index3)
+    if min(uploader_index1, uploader_index4, uploader_index5) == -1:
       self.uploader = False
     else:
-      self.uploader = self.html[uploader_index2:uploader_index3]
+      self.uploader = self.html[uploader_index4:uploader_index5]

@@ -1,0 +1,6 @@
+python-dateutil
+duckduckgo2
+watchdog
+requests
+pytz==2013b
+sphinx

@@ -314,11 +314,15 @@ top.settings = {
   'users': utils.plugin.USERS.ALL
 }
 
+KICK_IGNORE = []
+
 
 def kick(server=None, channel=None, text=None, nick=None, **kwargs):
+  kick_nick = (text.strip().split(" ", 1)[1]).lower()
+  if kick_nick in KICK_IGNORE: return
+
   player = pointsgame.select_player_by_name(nick)
   if pointsgame.has_item(player[0], 5) and pointsgame.use_item(player[0], 5) is not False:
-    kick_nick = text.strip().split(" ", 1)[1]
     server.kick(channel, kick_nick, "kicked by %s" % nick)
 
 kick.settings = {

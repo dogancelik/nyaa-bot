@@ -30,6 +30,8 @@ Then:
 
     Installing *watchdog* is required but using it is optional.
 
+**TL;DR**: If you want to install everything, :code:`pip install -r requirements.txt`
+
 Configuration
 -------------
 You can configure your *nyaa-bot* with *config.py* in the root directory.
