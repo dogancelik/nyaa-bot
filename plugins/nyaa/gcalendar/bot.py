@@ -1,5 +1,5 @@
 import utils.plugin
-from .. import gcalendar
+import gcalendar
 
 
 class BotCalendarChat:

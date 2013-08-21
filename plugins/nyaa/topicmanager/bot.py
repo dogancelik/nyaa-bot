@@ -1,6 +1,6 @@
 import utils.plugin
 import config
-from .. import topicmanager
+import topicmanager
 
 topicman = topicmanager.TopicManager()
 

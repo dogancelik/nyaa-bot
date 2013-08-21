@@ -1,8 +1,8 @@
 import utils.plugin
+import pointsgame
 import config
 import threading
 import re
-from .. import pointsgame
 import random
 
 WATCH_CHANNELS = config.MAIN_CHANNELS + config.DEV_CHANNELS
