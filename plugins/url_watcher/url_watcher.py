@@ -13,7 +13,7 @@ import re
 import requests
 import page_parsers
 
-REGEX_URI = ur"((https?://)?\w{2,}\.\w{2,4}(\.\w{2,4})?[\S]*(?<![\[\]\.\{\}]))"
+REGEX_URI = ur"((https?://)?[\w\-]{2,}\.\w{2,4}(\.\w{2,4})?[\S]*(?<![\[\]\.\{\}]))"
 COMPILED_REGEX = re.compile(REGEX_URI, re.I | re.U)
 
 
@@ -53,10 +53,11 @@ def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kw
       new_url = uri[0]
       if uri[0].find("http:") == -1 and uri[0].find("https:") == -1:
         new_url = "http://" + uri[0]
-      response = requests.get(new_url, headers=WATCH_HEADERS)
+      response = requests.head(new_url, allow_redirects=True, headers=WATCH_HEADERS)
       content_type = response.headers['content-type']
+      encode_to = None
       if content_type.find("charset") == -1:
-        response.encoding = "utf-8"  # for sites without Content-Type(charset) header
+        encode_to = "utf-8"
     except requests.exceptions.RequestException, e:
       logger.error("Error '%s' occurred on URL '%s'", str(e), uri[0])
       return
@@ -67,6 +68,10 @@ def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kw
     is_page = content_type.find("text") > -1
 
     if is_page:
+      response = requests.get(new_url, headers=WATCH_HEADERS)
+      if encode_to is not None:
+        response.encoding = encode_to  # for sites without Content-Type(charset) header
+
       page_html = response.text
       if response.url.find("boards.4chan.org") > -1:
         parser = page_parsers._4chan_thread_parser()

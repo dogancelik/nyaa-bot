@@ -32,6 +32,7 @@ class BotChat(object):
   Stats_My = "{}: You have"
   Stats_NotMy = "{} has"
   DailyLogin = "It's.. not like I wanted to give you these %s Rupees... baka!"
+  RequiresMorePoints = "You need to have more rupees than that ._."
   Requires2People = "The player must be in the same channel as you ._."
   TransferSuccessful = "Transfer complete!"
   TransferUnsuccessful = "Not enough rupees desu~"
@@ -85,6 +86,9 @@ def bet(server=None, nick=None, channel=None, text=None, **kwargs):
     times = times if times is not None else 1
 
   player = pointsgame.select_player_by_name(nick)
+
+  if times > 5000:
+    return
 
   if rawpoint == "max":
     point = player[2]
@@ -156,7 +160,11 @@ def give(server=None, channel=None, nick=None, text=None, **kwargs):
   else:
     points = try_parse_int(points)
 
-  if points <= 0 or server.inchannel(channel, target_nick) is False:
+  if points <= 0:
+    server.notice(nick, BotChat.RequiresMorePoints)
+    return
+
+  if server.inchannel(channel, target_nick) is False:
     server.notice(nick, BotChat.Requires2People)
     return
 

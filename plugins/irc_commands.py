@@ -1,7 +1,7 @@
 """
   *IRC commands* plugin
   ---------------------
-  Use ``.auth AUTH_PWD`` to authenticate yourself then you can use other commands such as:
+  Use ``auth AUTH_PWD`` to authenticate yourself then you can use other commands such as:
 
   .. warning::
 
@@ -9,11 +9,11 @@
 
   ::
 
-    .join #this-channel #that-channel
-    .leave #that-channel
-    .msg #this-channel Hello
-    .me #this-channel is AFK
-    .nick New_Nickname
+    join #this-channel #that-channel
+    leave #that-channel
+    msg #this-channel Hello
+    me #this-channel is AFK
+    nick New_Nickname
 """
 import utils.plugin
 
@@ -59,7 +59,7 @@ def auth(server=None, nick=None, text=None, **kwargs):
 
 auth.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': '\.auth .*',
+  'text': r"auth .*",
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }
@@ -74,7 +74,7 @@ def join(server=None, nick=None, text=None, **kwargs):
 
 join.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'.join.*',
+  'text': r"join .*",
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }
@@ -88,7 +88,7 @@ def part(server=None, nick=None, text=None, **kwargs):
 
 part.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'\.leave.*',
+  'text': r"(leave|part) .*",
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }
@@ -102,7 +102,7 @@ def nick(server=None, nick=None, text=None, **kwargs):
 
 nick.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'\.nick .*',
+  'text': r"nick .*",
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }
@@ -117,7 +117,7 @@ def say(server=None, nick=None, text=None, **kwargs):
 
 say.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'\.msg .*',
+  'text': r"(msg|say) .*",
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }
@@ -132,7 +132,7 @@ def action(server=None, nick=None, text=None, **kwargs):
 
 action.settings = {
   'events': utils.plugin.EVENTS.PRIVMSG,
-  'text': r'\.me .*',
+  'text': r"(me|action) .*",
   'channels': utils.plugin.CHANNELS.ALL,
   'users': utils.plugin.USERS.ALL
 }

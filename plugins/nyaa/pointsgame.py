@@ -188,7 +188,7 @@ items = [
   dict(name="Cloak of Admiration", price=200, duration=datetime.timedelta(weeks=1), count=0),
   dict(name="Scroll of Ultimate Kick", price=250, duration=datetime.timedelta(weeks=1), count=0),
   dict(name="Book of Fortunes", price=500, duration=datetime.timedelta(days=1), count=10),
-  dict(name="Kick Tickets", price=1000, duration=datetime.timedelta(weeks=1), count=10)
+  dict(name="Kick Tickets", price=3000, duration=datetime.timedelta(weeks=1), count=3)
 ]
 
 
