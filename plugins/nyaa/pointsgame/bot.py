@@ -49,7 +49,7 @@ def buy_item(server=None, nick=None, channel=None, text=None, **kwargs):
   ret = pointsgame.buy_item(player[0], item_id)
   if ret >= 0:
     server.privmsg(channel, BotChat.BuyItemSuccessful.format(nick, pointsgame.items[item_id]['name']))
-    if ret == 4:
+    if ret == 3:
       server.kick(channel, nick, "KAWAII KICK!")
   else:
     server.privmsg(channel, BotChat.BuyItemUnsuccessful.format(nick))
