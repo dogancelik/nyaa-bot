@@ -4,3 +4,5 @@ watchdog
 requests
 pytz==2013b
 sphinx
+pyquery
+google

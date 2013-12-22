@@ -4,10 +4,16 @@ Following plugins are bundled with nyaa-bot:
 
 If you are going to use the bundled plugins, you may need to install these packages (with `pip <http://www.pip-installer.org/>`_):
 
-* pytz - https://pypi.python.org/pypi/pytz
-* python-dateutil - https://pypi.python.org/pypi/python-dateutil
-* requests - https://pypi.python.org/pypi/requests
-* duckduckgo2 - https://pypi.python.org/pypi/duckduckgo2
+===============   =====
+Name              URL
+===============   =====
+pytz              https://pypi.python.org/pypi/pytz
+python-dateutil   https://pypi.python.org/pypi/python-dateutil
+requests          https://pypi.python.org/pypi/requests
+duckduckgo2       https://pypi.python.org/pypi/duckduckgo2
+pyquery           https://pypi.python.org/pypi/pyquery
+google            https://pypi.python.org/pypi/duckduckgo2
+===============   =====
 
 .. automodule:: plugins.ddg
 
@@ -22,3 +28,7 @@ If you are going to use the bundled plugins, you may need to install these packa
 .. automodule:: plugins.urban
 
 .. automodule:: plugins.auto_rejoin
+
+.. automodule:: plugins.thefreedict
+
+.. automodule:: plugins.search_google
