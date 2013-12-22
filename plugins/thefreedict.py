@@ -29,7 +29,7 @@ def lookup_word_internal(word):
   return pq(WORD_URL.format(word))
 
 
-def lookup_word(server=None, channel=None, text=None, **kwargs):
+def lookup_word(server=None, nick=None, text=None, **kwargs):
   command, query = text.split(" ", 1)
 
   doc = lookup_word_internal(query)
@@ -52,10 +52,10 @@ def lookup_word(server=None, channel=None, text=None, **kwargs):
         i += 1
       defi = defi.strip()
 
-    server.notice(channel, u"» %s %s" % (desc, defi))
+    server.notice(nick, u"» %s %s" % (desc, defi))
 
   if len(defs) == 0:
-    server.notice(channel, u"No definitions found for '%s'." % query)
+    server.notice(nick, u"No definitions found for '%s'." % query)
 
 lookup_word.settings = {
   'events': utils.plugin.EVENTS.PUBMSG + utils.plugin.EVENTS.PRIVMSG,
