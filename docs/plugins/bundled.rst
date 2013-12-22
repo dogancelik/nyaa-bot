@@ -12,7 +12,7 @@ python-dateutil   https://pypi.python.org/pypi/python-dateutil
 requests          https://pypi.python.org/pypi/requests
 duckduckgo2       https://pypi.python.org/pypi/duckduckgo2
 pyquery           https://pypi.python.org/pypi/pyquery
-google            https://pypi.python.org/pypi/duckduckgo2
+google            https://pypi.python.org/pypi/google
 ===============   =====
 
 .. automodule:: plugins.ddg
