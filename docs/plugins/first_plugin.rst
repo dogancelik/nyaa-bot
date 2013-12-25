@@ -46,7 +46,7 @@ Every function(the ones that you want to trigger in IRC) must have a dictionary 
 
 **"channels" to watch:**
 
-* ``utils.CHANNELS.ALL``
+* ``utils.plugin.CHANNELS.ALL``
 * A user defined list
 
 **"users" to watch:** (``hello_world.settings['users']``)
