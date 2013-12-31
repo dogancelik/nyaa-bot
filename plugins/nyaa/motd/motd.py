@@ -37,16 +37,16 @@ def setmotd(server=None, nick=None, text=None, **kwargs):
   except ValueError:
     sendmotd_internal(server, nick, readmotd())
   else:
-    sed = re.match(r"s/(.*)/(.*)/(g)?", query)
+    sed = re.match(r"s/(.*)/(.*)/(g)?", query, re.I)
     if sed is not None:
-      motd = readmotd(True).replace(
+      query = readmotd(True).replace(
         sed.groups()[0],
         sed.groups()[1],
         1 if sed.groups()[2] is None else None
       )
-      writemotd(motd)
-    else:
-      writemotd(query.replace("|", "\n"))
+    query = query.replace("|", "\n").strip()
+    writemotd(query)
+    sendmotd_internal(server, nick, readmotd())
 
 setmotd.settings = {
   'events': utils.plugin.EVENTS.PUBMSG + utils.plugin.EVENTS.PRIVMSG,
