@@ -2,13 +2,30 @@ import HTMLParser
 import re
 
 
+class title_parser(HTMLParser.HTMLParser):
+  def __init__(self):
+    HTMLParser.HTMLParser.__init__(self)
+    self.title_found = False
+    self.title_data = None
+
+  def handle_starttag(self, tag, attrs):
+    if tag == "title":
+      self.title_found = True
+
+  def handle_endtag(self, tag):
+    if self.title_data is not None:
+      self.title_found = False
+
+  def handle_data(self, data):
+    if self.title_found is True:
+      self.title_data = data
+
+
 def parse_title(data):
-  start = data.find("<title>") + 7
-  end = data.find("</title>")
-  if start == -1 or end == -1:
-    return None
-  res = data[start:end]
-  return HTMLParser.HTMLParser().unescape(res).strip() if len(res) > 0 else None
+  parser = title_parser()
+  parser.feed(data)
+  parser.close()
+  return HTMLParser.HTMLParser().unescape(parser.title_data).strip()
 
 
 class _4chan_thread_parser(HTMLParser.HTMLParser):

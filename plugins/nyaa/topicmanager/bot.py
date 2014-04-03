@@ -3,19 +3,34 @@ import config
 import topicmanager
 
 topicman = topicmanager.TopicManager()
+topic_backup = ""
 
 
 def topic(server=None, nick=None, channel=None, text=None, **kwargs):
+  global topic_backup
+
   if server.hasaccess(channel, nick):
-    topicman.parse(server.get_topic(channel))
+    try:
+      topicman.parse(server.get_topic(channel))
+    except AttributeError:
+      pass
+
     allvars = filter(lambda i: len(i) > 0, text.split(' ', 1)[1].strip().split(';'))
     changed = 0
     for var in allvars:
+
+      if var.lower() == "save":
+        topic_backup = server.get_topic(channel)
+        server.notice(nick, "Topic is saved.")
+      elif var.lower() == "restore" and topic_backup != "":
+        server.topic(channel, topic_backup)
+
       split = filter(lambda i: len(i) > 0, var.strip().split(' ', 1))
       if len(split) > 1:
         key = split[0].lower().strip()
         val = split[1]
         changed += topicman.set(key, val)
+
     if changed > 0:
       server.topic(channel, topicman.output())
 
