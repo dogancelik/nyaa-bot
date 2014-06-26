@@ -40,6 +40,7 @@ ROMAJI_DISPLAY = '<!-- ROMAJI.ORG DISPLAY RESULT AREA -->'
 ROMAJI_PARAMS = { 'save': 'save convert text to Romaji', 'text': '' }
 ROMAJI_SAID = u"{}: '{}'"
 
+
 def romaji_internal(text):
   ROMAJI_PARAMS['text'] = text.encode('shift-jis')
   req = requests.post(ROMAJI_URL, params=ROMAJI_PARAMS)
@@ -49,6 +50,7 @@ def romaji_internal(text):
   first = fstr.index('<font color="red">')
   last = fstr.rindex('</font>')
   return re.sub('<[^<]+?>', '', fstr[first:last]).strip()
+
 
 def romaji(server=None, nick=None, channel=None, text=None, **kwargs):
   if "!nk" in text:

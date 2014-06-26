@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-  *Urban Dictionary* plugin
-  -------------------------
+  *Urban Dictionary search* plugin
+  --------------------------------
 
   Searches definitions in urbandictionary.com.
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-  *The Free Dictionary* Plugin
-  ----------------------------
+  *The Free Dictionary search* Plugin
+  -----------------------------------
 
   Searches definitions in thefreedictionary.com.
 

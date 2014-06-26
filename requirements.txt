@@ -6,3 +6,4 @@ pytz==2013b
 sphinx
 pyquery
 google
+beautifulsoup4

@@ -1,31 +1,10 @@
 import HTMLParser
 import re
-
-
-class title_parser(HTMLParser.HTMLParser):
-  def __init__(self):
-    HTMLParser.HTMLParser.__init__(self)
-    self.title_found = False
-    self.title_data = None
-
-  def handle_starttag(self, tag, attrs):
-    if tag == "title":
-      self.title_found = True
-
-  def handle_endtag(self, tag):
-    if self.title_data is not None:
-      self.title_found = False
-
-  def handle_data(self, data):
-    if self.title_found is True:
-      self.title_data = data
+from bs4 import BeautifulSoup
 
 
 def parse_title(data):
-  parser = title_parser()
-  parser.feed(data)
-  parser.close()
-  return HTMLParser.HTMLParser().unescape(parser.title_data).strip()
+  return BeautifulSoup(data).title.string.strip()
 
 
 class _4chan_thread_parser(HTMLParser.HTMLParser):
@@ -75,17 +54,20 @@ class youtube_page_parser():
     try:
       self.likes = int(self.mark_regex.sub("", self.html[likes_start:likes_end]))
     except:
-      self.likes = -1
+      self.likes = 0
 
     dislikes_start = self.html.find('<span class="dislikes-count">') + 29
     dislikes_end = self.html.find("</span>", dislikes_start)
     try:
       self.dislikes = int(self.mark_regex.sub("", self.html[dislikes_start:dislikes_end]))
     except:
-      self.dislikes = 5
+      self.dislikes = 0
 
     # If ratings are disabled, stars will return -1
-    self.stars = int(round(float(self.likes) / float(self.likes + self.dislikes) * 5))
+    if self.likes == 0 and self.dislikes == 0:
+      self.stars = -1
+    else:
+      self.stars = int(round(float(self.likes) / float(self.likes + self.dislikes) * 5))
 
     views_start = self.html.find('<span class="watch-view-count') + 29
     views_mid = self.html.find(">", views_start) + 1
@@ -103,4 +85,4 @@ class youtube_page_parser():
     if min(uploader_index1, uploader_index4, uploader_index5) == -1:
       self.uploader = False
     else:
-      self.uploader = self.html[uploader_index4:uploader_index5]
+      self.uploader = HTMLParser.HTMLParser().unescape(self.html[uploader_index4:uploader_index5])

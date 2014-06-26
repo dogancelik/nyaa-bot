@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-  *NyaaTorrents* Plugin
-  ---------------------
+  *NyaaTorrents search* Plugin
+  ----------------------------
   Searches torrents in nyaa.eu in *English-translated Anime* category
 
   Usage::
@@ -14,9 +14,9 @@ import urllib
 
 BOT_CHAT = "4[%s] %s (%s) %s | SE: 3%s, LE: 4%s, DL: 1%s, MSG: 2%s"
 YQL_QUERY = """
-select * from html where url="http://www.nyaa.eu/?term=%s&cats=1_37&filter=0&sort=1&order=0" and xpath="//div[@id='main']/div[3]/table[4]/tr[contains(@class,'tlistrow')]"
+select * from html where url="http://www.nyaa.se/?term=%s&cats=1_37&filter=0&sort=1&order=0" and xpath="//div[@id='main']/div[3]/table[3]/tr[contains(@class,'tlistrow')]"
 """
-LOGGER_ERROR = "Nyaa.eu: %s"
+LOGGER_ERROR = "NyaaTorrents: %s"
 
 
 class BotChat:

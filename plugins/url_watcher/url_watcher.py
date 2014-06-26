@@ -81,7 +81,6 @@ def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kw
         parser = page_parsers.youtube_page_parser(response.text)
         if parser.is_video() is True:
           parser.parse()
-          print "stars", parser.stars, 5 % parser.stars
           page_title = BotChat.YOUTUBE_OUTPUT % (
             parser.title,
             parser.uploader if parser.uploader is not False else "N/A",

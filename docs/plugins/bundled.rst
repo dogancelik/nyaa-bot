@@ -13,6 +13,7 @@ requests          https://pypi.python.org/pypi/requests
 duckduckgo2       https://pypi.python.org/pypi/duckduckgo2
 pyquery           https://pypi.python.org/pypi/pyquery
 google            https://pypi.python.org/pypi/google
+lxml              https://pypi.python.org/pypi/lxml
 ===============   =====
 
 .. automodule:: plugins.ddg
@@ -25,10 +26,12 @@ google            https://pypi.python.org/pypi/google
 
 .. automodule:: plugins.url_watcher.url_watcher
 
-.. automodule:: plugins.urban
-
 .. automodule:: plugins.auto_rejoin
 
-.. automodule:: plugins.thefreedict
+.. automodule:: plugins.search_urbandict
+
+.. automodule:: plugins.search_thefreedict
 
 .. automodule:: plugins.search_google
+
+.. automodule:: plugins.search_youtube

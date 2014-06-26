@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-  *Google Search* Plugin
+  *Google search* Plugin
   ----------------------
 
   Searches Google
