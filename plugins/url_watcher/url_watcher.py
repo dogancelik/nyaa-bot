@@ -8,7 +8,6 @@
   Bot ignores URLs when message has ``!nk`` in it
 """
 import utils.plugin
-import itertools
 import re
 import requests
 import page_parsers
@@ -19,9 +18,6 @@ COMPILED_REGEX = re.compile(REGEX_URI, re.I | re.U)
 
 class BotChat:
   _4CHAN_OUTPUT = u"4«%s» 3«%s replies» 2«%s images»"
-  YOUTUBE_OUTPUT = u"3%s by 4%s (8%s, %s views)"
-  BLACK_STAR = u"★"
-  WHITE_STAR = u"☆"
   PAGE_SHOUT = u"[4URL] %s"
   CONTENT_SHOUT = u"[4URL] '%s' %s"
 
@@ -80,15 +76,7 @@ def watch_url(server=None, nick=None, channel=None, text=None, logger=None, **kw
       elif response.url.find("youtube.com") > -1:
         parser = page_parsers.youtube_page_parser(response.text)
         if parser.is_video() is True:
-          parser.parse()
-          page_title = BotChat.YOUTUBE_OUTPUT % (
-            parser.title,
-            parser.uploader if parser.uploader is not False else "N/A",
-            "".join([_ for _ in itertools.repeat(BotChat.BLACK_STAR, parser.stars)]) +
-            "".join([_ for _ in itertools.repeat(BotChat.WHITE_STAR, 5 - parser.stars)])
-            if parser.stars > 0 else "N/A",
-            parser.views if parser.views is not False else "N/A"
-          )
+          page_title = parser.parse()
         else:
           page_title = page_parsers.parse_title(response.text)
       else:

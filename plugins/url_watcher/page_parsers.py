@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import HTMLParser
 import re
 from bs4 import BeautifulSoup
+import itertools
 
 
 def parse_title(data):
@@ -37,6 +39,10 @@ class youtube_page_parser():
   html = title = uploader = views = ""
   likes = dislikes = stars = 0
 
+  YOUTUBE_OUTPUT = u"3%s by 4%s (8%s, %s views)"
+  BLACK_STAR = u"★"
+  WHITE_STAR = u"☆"
+
   def __init__(self, html):
     self.html = html
 
@@ -48,19 +54,28 @@ class youtube_page_parser():
   def parse(self):
     self._parse()
 
+    return self.YOUTUBE_OUTPUT % (
+      self.title,
+      self.uploader if self.uploader is not False else "N/A",
+      "".join([_ for _ in itertools.repeat(self.BLACK_STAR, self.stars)]) +
+      "".join([_ for _ in itertools.repeat(self.WHITE_STAR, 5 - self.stars)])
+      if self.stars > 0 else "N/A",
+      self.views if self.views is not False else "N/A"
+    )
+
   def _parse(self):
-    likes_start = self.html.find('<span class="likes-count">') + 26
-    likes_end = self.html.find("</span>", likes_start)
-    try:
-      self.likes = int(self.mark_regex.sub("", self.html[likes_start:likes_end]))
-    except:
+    html = BeautifulSoup(self.html)
+
+    parsed_likes = html.find(class_="likes-count").string.replace(",", "")
+    if parsed_likes:
+      self.likes = int(parsed_likes)
+    else:
       self.likes = 0
 
-    dislikes_start = self.html.find('<span class="dislikes-count">') + 29
-    dislikes_end = self.html.find("</span>", dislikes_start)
-    try:
-      self.dislikes = int(self.mark_regex.sub("", self.html[dislikes_start:dislikes_end]))
-    except:
+    parsed_dislikes = html.find(class_="dislikes-count").string.replace(",", "")
+    if parsed_dislikes:
+      self.dislikes = int(parsed_dislikes)
+    else:
       self.dislikes = 0
 
     # If ratings are disabled, stars will return -1
@@ -69,20 +84,18 @@ class youtube_page_parser():
     else:
       self.stars = int(round(float(self.likes) / float(self.likes + self.dislikes) * 5))
 
-    views_start = self.html.find('<span class="watch-view-count') + 29
-    views_mid = self.html.find(">", views_start) + 1
-    views_end = self.html.find("</span>", views_start)
-    if min(views_start, views_mid, views_end) == -1:
-      self.views = False
+    parsed_views = html.find(class_="watch-view-count")
+    parsed_views.div.extract()
+    parsed_views = parsed_views.string
+    if parsed_views:
+      self.views = parsed_views.replace(",", ".")
     else:
-      self.views = self.html[views_mid:views_end].strip().split(' ', 1)[0].replace(",", ".")
+      self.views = False
 
     self.title = parse_title(self.html)[:-10]
 
-    uploader_index1 = self.html.find("yt-user-name")
-    uploader_index4 = self.html.find('">', uploader_index1) + 2
-    uploader_index5 = self.html.find("</a>", uploader_index4)
-    if min(uploader_index1, uploader_index4, uploader_index5) == -1:
-      self.uploader = False
+    parsed_uploader = html.find(class_="yt-user-name").string
+    if parsed_uploader:
+      self.uploader = HTMLParser.HTMLParser().unescape(parsed_uploader)
     else:
-      self.uploader = HTMLParser.HTMLParser().unescape(self.html[uploader_index4:uploader_index5])
+      self.uploader = False
